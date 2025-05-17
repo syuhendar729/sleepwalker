@@ -81,9 +81,6 @@ while running:
         if not battery.is_taken:
             battery.draw(screen)
 
-    if time_left == 0:
-        print("Waktu habis")
-
     player.draw(screen)
 
 
@@ -92,9 +89,11 @@ while running:
     dark_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
     dark_surface.fill((0, 0, 0, 230))  # full hitam 255
 
-    # Membuat cahaya senter di sekitar player
-    light_radius = 50
-    pygame.draw.circle(dark_surface, (0, 0, 0, 0), player.rect.center, light_radius)
+    if time_left != 0:
+        # Membuat cahaya senter di sekitar player
+        light_radius = 50
+        pygame.draw.circle(dark_surface, (0, 0, 0, 0), player.rect.center, light_radius)
+
 
     screen.blit(dark_surface, (0, 0))
     # ==========================================================
