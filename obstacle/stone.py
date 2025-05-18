@@ -32,7 +32,7 @@ class Stone(Obstacle):
                 self.vy = 0
 
     def draw(self, screen):
-        pygame.draw.rect(screen, GRAY, self.rect)
+        pygame.draw.rect(screen, BLACK, self.rect)
 
     def interact(self, player):
         print(f"Interaksi kepada {player}")

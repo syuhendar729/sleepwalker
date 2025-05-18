@@ -1,7 +1,8 @@
+from abc import ABC, abstractmethod
 import pygame
 from settings import *
 
-class Player:
+class Player(ABC):
     def __init__(self, x, y, size, color, max_speed):
         self.size = size
         self.color = color
@@ -28,18 +29,15 @@ class Player:
         self.rect.x += int(self.vx)
         self.rect.y += int(self.vy)
 
+    @abstractmethod
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        pass
 
-
-class PlayerHuman(Player):
-    def __init__(self, x, y):
-        super().__init__(x, y, size=40, color=BLUE, max_speed=5)
-        self.is_won = False
-        self.is_lose = False
-        self.is_alive = True
 
 
 class PlayerMonster(Player):
     def __init__(self, x, y):
         super().__init__(x, y, size=50, color=(200, 50, 50), max_speed=6)
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
