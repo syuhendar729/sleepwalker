@@ -3,7 +3,7 @@
 import pygame
 import os
 
-class music:
+class Music:
     def __init__(self):
         pygame.mixer.init()
         self.current_music = None

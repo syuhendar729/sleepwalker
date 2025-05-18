@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 from lose_condition import show_lose_screen
+from music import Music
 from property import Battery
 from settings import *
 from player import PlayerHuman
@@ -29,6 +30,9 @@ class Game:
         self.running = True
         self.won = False
 
+        # Music
+        self.music = Music()
+
     # Membuat posisi acak / memilih tempat acak
     def get_random_position(self):
         margin = 50 
@@ -37,6 +41,7 @@ class Game:
         return (x, y)
 
     def run(self):
+        self.music.play('bs-gameplay.mp3')
         while self.running:
             # dt = self.clock.tick(60)
             self.handle_events()
@@ -97,6 +102,7 @@ class Game:
         if dist < self.win_radius + self.player.rect.width // 2:
             self.won = True
             self.running = False
+            self.music.stop_music()
             # Tampilkan layar kemenangan
             show_win_screen(self.screen, WIDTH, HEIGHT)
 
@@ -127,6 +133,7 @@ class Game:
             light_radius = 50
             pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
         elif self.time_left == 0:
+            self.music.stop_music()
             show_lose_screen(self.screen, WIDTH, HEIGHT)
 
         self.screen.blit(dark_surface, (0, 0))
