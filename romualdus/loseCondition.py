@@ -35,6 +35,7 @@ def show_win_screen(screen, width, height):
             quit_text = button_font.render("Quit", True, hover_color)
         else:
             quit_text = button_font.render("Quit", True, white)
+            print ('helo')
 
         # Mengcopy text ke layar
         screen.blit(play_again_text, play_again_text.get_rect(center=play_again_rect.center))
