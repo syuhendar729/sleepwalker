@@ -1,6 +1,5 @@
 import pygame
-from player.player import PlayerHuman
-from settings import BLACK
+from settings import WHITE
 
 
 class Monster:
@@ -8,6 +7,6 @@ class Monster:
         self.rect = pygame.Rect(x, y, 50, 50)
 
     def draw(self, screen):
-        pygame.draw.rect(screen, BLACK, self.rect)
+        pygame.draw.rect(screen, WHITE, self.rect)
         
 

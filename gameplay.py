@@ -4,7 +4,7 @@ import random
 from player.monster import Monster
 from settings import *
 from music import Music
-from player.player import PlayerHuman
+from player.player_human import PlayerHuman
 from property.property import Battery, Bed
 from obstacle.stone import Stone
 from obstacle.wall import walls
@@ -19,7 +19,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 36)
 
-        self.player = PlayerHuman(60, 60)
+        self.player = PlayerHuman(40, 40)
         self.monster = Monster(500, 740)
         self.stones = [Stone(800, 100), Stone(800, 700)]
         self.batteries = [Battery(5, 5), Battery(1175, 780)]
@@ -122,7 +122,7 @@ class Game:
 
 
     def draw(self):
-        self.screen.fill(WHITE)
+        self.screen.fill(GRAY)
 
         for wall in walls:
             pygame.draw.rect(self.screen, BROWN, wall)
@@ -147,13 +147,13 @@ class Game:
 
         # Efek gelap dengan lubang cahaya
         dark_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        dark_surface.fill((0, 0, 0, 230))  # full hitam 255
+        dark_surface.fill((0, 0, 0, 255))  # full hitam 255
 
         # Jika waktu habis maka senter akan mati dan kalah
-        if self.time_left != 0:
+        if self.time_left > 0:
             light_radius = 50
             pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
-        elif self.time_left == 0:
+        else:             
             self.music.stop_music()
             show_lose_screen(self.screen, WIDTH, HEIGHT)
 
