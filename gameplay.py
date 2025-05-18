@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+from lose_condition import show_lose_screen
 from property import Battery
 from settings import *
 from player import PlayerHuman
@@ -37,7 +38,7 @@ class Game:
 
     def run(self):
         while self.running:
-            dt = self.clock.tick(60)
+            # dt = self.clock.tick(60)
             self.handle_events()
             self.update()
             self.draw()
@@ -121,8 +122,12 @@ class Game:
         dark_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         dark_surface.fill((0, 0, 0, 255))  # full hitam 255
 
-        light_radius = 60
-        pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
+        # Jika waktu habis maka senter akan mati dan kalah
+        if self.time_left != 0:
+            light_radius = 50
+            pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
+        elif self.time_left == 0:
+            show_lose_screen(self.screen, WIDTH, HEIGHT)
 
         self.screen.blit(dark_surface, (0, 0))
 
