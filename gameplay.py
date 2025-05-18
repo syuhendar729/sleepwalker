@@ -22,7 +22,7 @@ class Game:
         self.player = PlayerHuman(40, 40)
         self.monster = Monster(500, 740)
         self.stones = [Stone(800, 100), Stone(800, 700)]
-        self.batteries = [Battery(5, 5), Battery(1175, 780)]
+        self.batteries = [Battery(5, 5), Battery(800, 400)]
 
         self.start_ticks = pygame.time.get_ticks()
 
@@ -106,14 +106,8 @@ class Game:
             self.music.stop_music()
             show_lose_screen(self.screen, WIDTH, HEIGHT)
 
-        # Cek kondisi menang
-        # player_center = self.player.rect.center
-        # dist = ((player_center[0] - self.finish_pos[0]) ** 2 + (player_center[1] - self.finish_pos[1]) ** 2) ** 0.5
-        # if dist < self.finish_radius + self.player.rect.width // 2:
-        #     self.running = False
-        #     self.music.stop_music()
-        #     # Tampilkan layar kemenangan
-        #     show_win_screen(self.screen, WIDTH, HEIGHT)
+        # Memerbarui monster
+        self.monster.update() 
 
         if self.player.rect.colliderect(self.bed.rect):
             self.running = False
@@ -147,7 +141,7 @@ class Game:
 
         # Efek gelap dengan lubang cahaya
         dark_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        dark_surface.fill((0, 0, 0, 255))  # full hitam 255
+        dark_surface.fill((0, 0, 0, 200))  # full hitam 255
 
         # Jika waktu habis maka senter akan mati dan kalah
         if self.time_left > 0:

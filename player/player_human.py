@@ -13,7 +13,7 @@ class PlayerHuman(Player):
             pygame.image.load("assets/player_human/R2.png").convert_alpha(),
             pygame.image.load("assets/player_human/R3.png").convert_alpha()
         ]
-        self.frames_right = [pygame.transform.scale(img, (40, 50)) for img in self.frames_right]
+        self.frames_right = [pygame.transform.scale(img, (30, 40)) for img in self.frames_right]
         
         # Load semua frame animasi jalan ke kiri
         self.frames_left = [
@@ -21,7 +21,7 @@ class PlayerHuman(Player):
             pygame.image.load("assets/player_human/L2.png").convert_alpha(),
             pygame.image.load("assets/player_human/L3.png").convert_alpha()
         ]
-        self.frames_left = [pygame.transform.scale(img, (40, 50)) for img in self.frames_left]
+        self.frames_left = [pygame.transform.scale(img, (30, 40)) for img in self.frames_left]
 
         self.current_frame = 0
         self.animation_speed = 0.15
