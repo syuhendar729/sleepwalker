@@ -1,14 +1,15 @@
 import pygame
 import sys
 import random
-from lose_condition import show_lose_screen
-from music import Music
-from property import Battery
+from player.monster import Monster
 from settings import *
-from player import PlayerHuman
-from stone import Stone
-from wall import walls
-from winning_condition import show_win_screen
+from music import Music
+from player.player import PlayerHuman
+from property.property import Battery, Bed
+from obstacle.stone import Stone
+from obstacle.wall import walls
+from scene.lose_condition import show_lose_screen
+from scene.winning_condition import show_win_screen
 
 class Game:
     def __init__(self):
@@ -19,16 +20,18 @@ class Game:
         self.font = pygame.font.SysFont(None, 36)
 
         self.player = PlayerHuman(60, 60)
+        self.monster = Monster(500, 740)
         self.stones = [Stone(800, 100), Stone(800, 700)]
         self.batteries = [Battery(5, 5), Battery(1175, 780)]
 
         self.start_ticks = pygame.time.get_ticks()
-        self.running = True
 
-        self.win_pos = self.get_random_position()
-        self.win_radius = 20
+        # self.finish_pos = self.get_random_position()
+        # self.finish_radius = 20
+        # self.finish = pygame.Rect(200, 200, 20, 20)
         self.running = True
-        self.won = False
+        self.bed_pos = self.get_random_position()
+        self.bed = Bed(self.bed_pos[0], self.bed_pos[1])
 
         # Music
         self.music = Music()
@@ -43,7 +46,7 @@ class Game:
     def run(self):
         self.music.play('bs-gameplay.mp3')
         while self.running:
-            # dt = self.clock.tick(60)
+            self.clock.tick(60)
             self.handle_events()
             self.update()
             self.draw()
@@ -96,15 +99,27 @@ class Game:
                 battery.is_taken = True
                 self.start_ticks += 30 * 1000  # tambah waktu
 
-        # Cek kondisi menang
-        player_center = self.player.rect.center
-        dist = ((player_center[0] - self.win_pos[0]) ** 2 + (player_center[1] - self.win_pos[1]) ** 2) ** 0.5
-        if dist < self.win_radius + self.player.rect.width // 2:
-            self.won = True
+        # Cek sentuhan antara monster dan player
+        if self.player.rect.colliderect(self.monster.rect):
+            self.player.is_alive = False            
             self.running = False
             self.music.stop_music()
-            # Tampilkan layar kemenangan
+            show_lose_screen(self.screen, WIDTH, HEIGHT)
+
+        # Cek kondisi menang
+        # player_center = self.player.rect.center
+        # dist = ((player_center[0] - self.finish_pos[0]) ** 2 + (player_center[1] - self.finish_pos[1]) ** 2) ** 0.5
+        # if dist < self.finish_radius + self.player.rect.width // 2:
+        #     self.running = False
+        #     self.music.stop_music()
+        #     # Tampilkan layar kemenangan
+        #     show_win_screen(self.screen, WIDTH, HEIGHT)
+
+        if self.player.rect.colliderect(self.bed.rect):
+            self.running = False
+            self.music.stop_music()
             show_win_screen(self.screen, WIDTH, HEIGHT)
+
 
     def draw(self):
         self.screen.fill(WHITE)
@@ -119,14 +134,20 @@ class Game:
             if not battery.is_taken:
                 battery.draw(self.screen)
 
-        self.player.draw(self.screen)
+        # Gambar player di posisi sekarang
+        if self.player.is_alive:
+            self.player.draw(self.screen)
 
-        # Gambar lingkaran kemenangan
-        pygame.draw.circle(self.screen, (0, 255, 0), self.win_pos, self.win_radius)
+        # Gambar posisi monster
+        self.monster.draw(self.screen)
+
+        # Gambar lingkaran finish
+        # pygame.draw.circle(self.screen, (0, 255, 0), self.finish_pos, self.finish_radius)
+        pygame.draw.circle(self.screen, (0, 255, 0), self.bed_pos, 20)
 
         # Efek gelap dengan lubang cahaya
         dark_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        dark_surface.fill((0, 0, 0, 255))  # full hitam 255
+        dark_surface.fill((0, 0, 0, 230))  # full hitam 255
 
         # Jika waktu habis maka senter akan mati dan kalah
         if self.time_left != 0:

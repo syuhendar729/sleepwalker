@@ -1,10 +1,10 @@
 import pygame
-import menu
+from scene import menu
 from gameplay import Game
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((menu.SCREEN_WIDTH, menu.SCREEN_HEIGHT))
+    # screen = pygame.display.set_mode((menu.SCREEN_WIDTH, menu.SCREEN_HEIGHT))
     pygame.display.set_caption("Game")
 
     while True:
@@ -13,6 +13,7 @@ def main():
         if action == "start":
             game = Game()
             game.run()  # jalankan game
+
 
 if __name__ == "__main__":
     main()
