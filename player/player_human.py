@@ -37,8 +37,31 @@ class PlayerHuman(Player):
 
         self.direction = "right"  # default arah player
 
+
+    def move_and_collide(self, walls):
+        # Gerak di X
+        # self.rect.x += int(self.vx)
+        self.rect.x += self.vx
+        for wall in walls:
+            if self.rect.colliderect(wall.rect if hasattr(wall, 'rect') else wall):
+                if self.vx > 0:  # Gerak ke kanan, tabrak kanan
+                    self.rect.right = (wall.rect if hasattr(wall, 'rect') else wall).left
+                elif self.vx < 0:  # Gerak ke kiri, tabrak kiri
+                    self.rect.left = (wall.rect if hasattr(wall, 'rect') else wall).right
+                self.vx = 0  # Hentikan gerak X
+
+        # Gerak di Y
+        # self.rect.y += int(self.vy)
+        self.rect.y += self.vy
+        for wall in walls:
+            if self.rect.colliderect(wall.rect if hasattr(wall, 'rect') else wall):
+                if self.vy > 0:  # Gerak ke bawah, tabrak bawah
+                    self.rect.bottom = (wall.rect if hasattr(wall, 'rect') else wall).top
+                elif self.vy < 0:  # Gerak ke atas, tabrak atas
+                    self.rect.top = (wall.rect if hasattr(wall, 'rect') else wall).bottom
+                self.vy = 0  # Hentikan gerak Y
+
     def update(self):
-        super().update()
         
         keys = pygame.key.get_pressed()
         

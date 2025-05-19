@@ -5,7 +5,7 @@ from player.monster import Monster
 from settings import *
 from music import Music
 from player.player_human import PlayerHuman
-from property.property import Battery, Bed
+from property.property import Battery, Bed, Flash
 from obstacle.stone import Stone
 from obstacle.wall import walls
 from scene.lose_condition import show_lose_screen
@@ -20,15 +20,13 @@ class Game:
         self.font = pygame.font.SysFont(None, 36)
 
         self.player = PlayerHuman(40, 40)
+        self.flash = Flash()
         self.monster = Monster(500, 740)
         self.stones = [Stone(800, 100), Stone(800, 700)]
-        self.batteries = [Battery(5, 5), Battery(800, 400)]
+        self.batteries = [Battery(300, 280), Battery(800, 400)]
 
         self.start_ticks = pygame.time.get_ticks()
 
-        # self.finish_pos = self.get_random_position()
-        # self.finish_radius = 20
-        # self.finish = pygame.Rect(200, 200, 20, 20)
         self.running = True
         self.bed_pos = self.get_random_position()
         self.bed = Bed(self.bed_pos[0], self.bed_pos[1])
@@ -61,21 +59,16 @@ class Game:
 
     def update(self):
         keys = pygame.key.get_pressed()
-        self.player.handle_input(keys)
 
-        old_x, old_y = self.player.rect.x, self.player.rect.y
+
+        self.player.handle_input(keys)
+        # old_x, old_y = self.player.rect.x, self.player.rect.y
         self.player.update()
+        self.player.move_and_collide(walls)
 
         # Hitung waktu mundur
         seconds_passed = (pygame.time.get_ticks() - self.start_ticks) // 1000
         self.time_left = max(0, 30 - seconds_passed)
-
-        # Cek tabrakan dengan walls
-        for wall in walls:
-            if self.player.rect.colliderect(wall):
-                self.player.rect.x, self.player.rect.y = old_x, old_y
-                self.player.vx = 0
-                self.player.vy = 0
 
         # Cek tabrakan dengan stones
         for stone in self.stones:
@@ -136,7 +129,6 @@ class Game:
         self.monster.draw(self.screen)
 
         # Gambar lingkaran finish
-        # pygame.draw.circle(self.screen, (0, 255, 0), self.finish_pos, self.finish_radius)
         pygame.draw.circle(self.screen, (0, 255, 0), self.bed_pos, 20)
 
         # Efek gelap dengan lubang cahaya
@@ -145,8 +137,9 @@ class Game:
 
         # Jika waktu habis maka senter akan mati dan kalah
         if self.time_left > 0:
-            light_radius = 50
-            pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
+            self.flash.drawlight(dark_surface, self.player)
+            # light_radius = 50
+            # pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
         else:             
             self.music.stop_music()
             show_lose_screen(self.screen, WIDTH, HEIGHT)

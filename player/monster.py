@@ -1,6 +1,6 @@
 
 import pygame
-from settings import HEIGHT, WHITE, WIDTH
+from settings import HEIGHT, WIDTH
 
 class Monster:
     def __init__(self, x, y):
