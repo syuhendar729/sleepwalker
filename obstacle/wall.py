@@ -1,9 +1,8 @@
 import pygame
 from settings import BROWN
 
-# Konstanta ukuran tetap
-HORIZONTAL_WALL_HEIGHT = 20
-VERTICAL_WALL_WIDTH = 20
+LENGTH = 100
+THICKNESS = 20
 
 class Wall:
     def __init__(self, x, y, width, height):
@@ -12,47 +11,85 @@ class Wall:
     def draw(self, screen):
         pygame.draw.rect(screen, BROWN, self.rect)
 
-
 class HorizontalWall(Wall):
-    def __init__(self, x, y, width):
-        super().__init__(x, y, width, HORIZONTAL_WALL_HEIGHT)
-
+    def __init__(self, x, y):
+        super().__init__(x, y, LENGTH, THICKNESS)
 
 class VerticalWall(Wall):
-    def __init__(self, x, y, height):
-        super().__init__(x, y, VERTICAL_WALL_WIDTH, height)
+    def __init__(self, x, y):
+        super().__init__(x, y, THICKNESS, LENGTH)
 
 
-walls = [
-    # Batas luar
-    HorizontalWall(0, -20, 1200),  # atas
-    VerticalWall(-20, 0, 800),     # kiri
-    HorizontalWall(0, 800, 1200),  # bawah
-    VerticalWall(1200, 0, 800),    # kanan
-
-    # Dalam
-    VerticalWall(100, 500, 50),
-    HorizontalWall(100, 100, 700),
-    HorizontalWall(890, 100, 100),
-    VerticalWall(100, 100, 300),
-    HorizontalWall(100, 480, 500),
-    VerticalWall(1060, 100, 400),
-    VerticalWall(680, 180, 250),
-    VerticalWall(500, 50, 60),
-    HorizontalWall(200, 200, 400),
-    HorizontalWall(780, 200, 300),
-    VerticalWall(850, 200, 200),
-    HorizontalWall(850, 300, 150),
-    HorizontalWall(680, 500, 400),
-    VerticalWall(200, 200, 230),
-    VerticalWall(400, 380, 100),
-    VerticalWall(800, 500, 60),
-    VerticalWall(350, 500, 50),
-    VerticalWall(500, 550, 50),
-    VerticalWall(480, 200, 200),
-    HorizontalWall(300, 300, 200),
-    HorizontalWall(100, 600, 980),
-
-]  # dll
+# Ketentuan maze cell:
+# 0: wall tidak dibuat
+# 1: wall dibuat horizontal
+# 2: wall dibuat vertical
+# 3: wall dibuat horizontal dan vertical
+# Grid size: 13 columns x 9 rows mengikuti ukuran screen 1200x800
 
 
+maze = [
+    [3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+    [2, 1, 1, 1, 1, 2, 0, 2, 1, 1, 1, 2, 2],
+    [2, 2, 3, 1, 0, 1, 3, 0, 1, 1, 3, 2, 2],
+    [2, 2, 0, 2, 0, 0, 2, 0, 0, 0, 2, 0, 2],
+    [2, 2, 3, 1, 1, 1, 3, 1, 0, 3, 3, 0, 2],
+    [2, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 2],
+    [2, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+    [2, 0, 2, 2, 0, 1, 1, 2, 0, 3, 1, 0, 2],
+    [3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+]
+
+
+def generate_walls_from_maze(maze):
+    walls = []
+    rows = len(maze)
+    cols = len(maze[0])
+    print(rows)
+    print(cols)
+    for y in range(rows):
+        for x in range(cols):
+            cell = maze[y][x]
+            if cell == 1: # horizontal
+                print(f"Maze: {maze[y][x]}")
+                print(f"x: {x} dan y: {y}")
+                walls.append(HorizontalWall(x*LENGTH, y*LENGTH))
+            elif cell == 2: # vertical
+                print(f"Maze: {maze[y][x]}")
+                print(f"x: {x} dan y: {y}")
+                walls.append(VerticalWall(x*LENGTH, y*LENGTH))
+            elif cell == 3: # horizontal dan vertical
+                print(f"Maze: {maze[y][x]}")
+                print(f"x: {x} dan y: {y}")
+                walls.append(HorizontalWall(x*LENGTH, y*LENGTH))
+                walls.append(VerticalWall(x*LENGTH, y*LENGTH))
+            else:
+                pass
+
+    return walls
+
+walls = generate_walls_from_maze(maze)
+
+
+
+# maze = [
+#     [3, 1, 1, 1, 2],
+#     [2, 3, 1, 2, 2],
+#     [2, 2, 2, 2, 2],
+#     [2, 0, 1, 0, 2],
+#     [2, 1, 1, 1, 0],
+# ]
+
+# maze = [
+#     [3, 1, 2, 0, 0],
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
+# ]
+
+# x0 x1 x2 x3 x4 (y1)
+# 
+#
+#
+#

@@ -22,8 +22,9 @@ class Game:
         self.player = PlayerHuman(40, 40)
         self.flash = Flash()
         self.monster = Monster(500, 740)
-        self.stones = [Stone(800, 100), Stone(800, 700)]
-        self.batteries = [Battery(300, 280), Battery(800, 400)]
+        self.stones = [Stone(720, 80), Stone(800, 700)]
+        # self.stones = []
+        self.batteries = [Battery(300, 280), Battery(800, 420)]
 
         self.start_ticks = pygame.time.get_ticks()
 
@@ -133,7 +134,7 @@ class Game:
 
         # Efek gelap dengan lubang cahaya
         dark_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        dark_surface.fill((0, 0, 0, 200))  # full hitam 255
+        dark_surface.fill((0, 0, 0, 255))  # full hitam 255
 
         # Jika waktu habis maka senter akan mati dan kalah
         if self.time_left > 0:
