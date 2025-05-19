@@ -37,7 +37,7 @@ class Player(ABC):
 
 class PlayerMonster(Player):
     def __init__(self, x, y):
-        super().__init__(x, y, size=50, color=(200, 50, 50), max_speed=6)
+        super().__init__(x, y, size=50, color=(200, 50, 50), max_speed=4)
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)

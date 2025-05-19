@@ -1,11 +1,11 @@
 import pygame
 from player.player import Player
-from settings import BLUE
+from settings import BLUE, PLAYER_MAX_SPEED
 
 
 class PlayerHuman(Player):
     def __init__(self, x, y):
-        super().__init__(x, y, size=40, color=BLUE, max_speed=5)
+        super().__init__(x, y, size=40, color=BLUE, max_speed=PLAYER_MAX_SPEED)
         
         # Load semua frame animasi jalan ke kanan
         self.frames_right = [
