@@ -25,9 +25,9 @@ class Player(ABC):
         if not (keys[pygame.K_w] or keys[pygame.K_s]):
             self.vy *= (1 - PLAYER_FRICTION)
 
+    @abstractmethod
     def update(self):
-        self.rect.x += int(self.vx)
-        self.rect.y += int(self.vy)
+        pass
 
     @abstractmethod
     def draw(self, screen):
