@@ -112,5 +112,9 @@ class PlayerHuman(Player):
 
         self.rect.topleft = (self.rect.x, self.rect.y)
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
+    def draw(self, screen, camera=None):
+        # screen.blit(self.image, self.rect)
+        if camera:
+            screen.blit(self.image, camera.apply(self.rect))
+        else:
+            screen.blit(self.image, self.rect)

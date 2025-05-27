@@ -1,6 +1,6 @@
 
 import pygame
-from settings import HEIGHT, WIDTH
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Monster:
     def __init__(self, x, y):
@@ -27,9 +27,9 @@ class Monster:
         self.rect.y += self.vel_y
 
         # Jika menyentuh sisi layar, balik arah (pantul)
-        if self.rect.right >= WIDTH or self.rect.left <= 0:
+        if self.rect.right >= SCREEN_WIDTH or self.rect.left <= 0:
             self.vel_x *= -1
-        if self.rect.bottom >= HEIGHT or self.rect.top <= 0:
+        if self.rect.bottom >= SCREEN_HEIGHT or self.rect.top <= 0:
             self.vel_y *= -1
 
         # Pilih animasi berdasarkan arah
@@ -44,9 +44,13 @@ class Monster:
             self.last_update = now
             self.frame_index = (self.frame_index + 1) % len(self.current_frames)
 
-    def draw(self, screen):
+    def draw(self, screen, camera=None):
         # Gambar frame animasi di posisi monster
         current_image = self.current_frames[self.frame_index]
         # Sesuaikan posisi gambar dengan rect
-        screen.blit(current_image, self.rect)
+        # screen.blit(current_image, self.rect)
+        if camera:
+            screen.blit(current_image, camera.apply(self.rect))
+        else:
+            screen.blit(current_image, self.rect)
 

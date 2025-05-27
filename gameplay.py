@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+from camera import Camera
 from player.monster import Monster
 from settings import *
 from music import Music
@@ -14,10 +15,11 @@ from scene.winning_condition import show_win_screen
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Sleep Walker Maze - Darkness")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 36)
+        self.camera = Camera()
 
         self.player = PlayerHuman(40, 40)
         self.flash = Flash()
@@ -38,8 +40,8 @@ class Game:
     # Membuat posisi acak / memilih tempat acak
     def get_random_position(self):
         margin = 50 
-        x = random.randint(margin, WIDTH - margin)
-        y = random.randint(margin, HEIGHT - margin)
+        x = random.randint(margin, WORLD_WIDTH - margin)
+        y = random.randint(margin, WORLD_HEIGHT - margin)
         return (x, y)
 
     def run(self):
@@ -66,12 +68,13 @@ class Game:
         # old_x, old_y = self.player.rect.x, self.player.rect.y
         self.player.update()
         self.player.move_and_collide(walls)
+        self.camera.update(self.player)
 
         # Hitung waktu mundur
         seconds_passed = (pygame.time.get_ticks() - self.start_ticks) // 1000
         self.time_left = max(0, 30 - seconds_passed)
 
-        # Cek tabrakan dengan stones
+        # Cek sentuhan antara player dan stones
         for stone in self.stones:
             if self.player.rect.colliderect(stone.rect):
                 dx = stone.rect.centerx - self.player.rect.centerx
@@ -86,7 +89,7 @@ class Game:
         for stone in self.stones:
             stone.update(walls)
 
-        # Cek tabrakan baterai
+        # Cek sentuhan antara player dan baterai
         for battery in self.batteries:
             if self.player.rect.colliderect(battery.rect) and not battery.is_taken:
                 print("Berhasil mengambil baterai")
@@ -98,52 +101,66 @@ class Game:
             self.player.is_alive = False            
             self.running = False
             self.music.stop_music()
-            show_lose_screen(self.screen, WIDTH, HEIGHT)
+            show_lose_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         # Memerbarui monster
         self.monster.update() 
 
+        # Cek sentuhan antara player dan finish
         if self.player.rect.colliderect(self.bed.rect):
             self.running = False
             self.music.stop_music()
-            show_win_screen(self.screen, WIDTH, HEIGHT)
+            show_win_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
 
     def draw(self):
         self.screen.fill(GRAY)
 
         for wall in walls:
-            pygame.draw.rect(self.screen, BROWN, wall)
+            # pygame.draw.rect(self.screen, BROWN, wall)
+            rect = wall.rect if hasattr(wall, 'rect') else wall
+            pygame.draw.rect(self.screen, BROWN, self.camera.apply(rect))
 
         for stone in self.stones:
-            stone.draw(self.screen)
+            # stone.draw(self.screen)
+            stone.draw(self.screen, self.camera)
 
         for battery in self.batteries:
             if not battery.is_taken:
-                battery.draw(self.screen)
+                # battery.draw(self.screen)
+                battery.draw(self.screen, self.camera)
 
         # Gambar player di posisi sekarang
         if self.player.is_alive:
-            self.player.draw(self.screen)
+            # self.player.draw(self.screen)
+            self.player.draw(self.screen, self.camera)
 
         # Gambar posisi monster
-        self.monster.draw(self.screen)
+        # self.monster.draw(self.screen)
+        self.monster.draw(self.screen, self.camera)
 
         # Gambar lingkaran finish
-        pygame.draw.circle(self.screen, (0, 255, 0), self.bed_pos, 20)
+        # pygame.draw.circle(self.screen, (0, 255, 0), self.bed_pos, 20)
+        pygame.draw.circle(
+            self.screen,
+            (0, 255, 0),
+            (self.bed_pos[0] + self.camera.offset_x, self.bed_pos[1] + self.camera.offset_y),
+            20
+        )
 
         # Efek gelap dengan lubang cahaya
-        dark_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        dark_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         dark_surface.fill((0, 0, 0, 255))  # full hitam 255
 
         # Jika waktu habis maka senter akan mati dan kalah
         if self.time_left > 0:
-            self.flash.drawlight(dark_surface, self.player)
+            self.flash.drawlight(dark_surface, self.player, self.camera)
+            # self.flash.drawlight(dark_surface, self.player)
             # light_radius = 50
             # pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
         else:             
             self.music.stop_music()
-            show_lose_screen(self.screen, WIDTH, HEIGHT)
+            show_lose_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.screen.blit(dark_surface, (0, 0))
 
