@@ -1,7 +1,7 @@
 import pygame
 from player.player import Player
 from settings import BLUE, PLAYER_MAX_SPEED
-
+from audio import Audio
 
 class PlayerHuman(Player):
     def __init__(self, x, y):
@@ -34,9 +34,11 @@ class PlayerHuman(Player):
         self.is_won = False
         self.is_lose = False
         self.is_alive = True
+        self.is_moving = False
 
         self.direction = "right"  # default arah player
-
+        self.sfx = Audio()
+        
 
     def move_and_collide(self, walls):
         # Gerak di X
@@ -64,13 +66,22 @@ class PlayerHuman(Player):
     def update(self):
         
         keys = pygame.key.get_pressed()
-        
+        moving = keys[pygame.K_w] or keys[pygame.K_a] or keys[pygame.K_s] or keys[pygame.K_d]
+
+        # Play SFX only when start moving
+        if moving and not self.is_moving:
+            self.sfx.play("sfx-player-move.mp3", loop=False)
+            self.is_moving = True
+        elif not moving:
+            self.is_moving=False
+
         moving_right = keys[pygame.K_d]
         moving_left = keys[pygame.K_a]
         moving_up = keys[pygame.K_w]
         moving_down = keys[pygame.K_s]
 
         if moving_right:
+            # self.sfx.play("sfx-player-move.mp3", loop=False)
             self.direction = "right"
             self.frame_timer += self.animation_speed
             if self.frame_timer >= 1:

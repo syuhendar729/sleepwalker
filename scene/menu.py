@@ -1,5 +1,6 @@
 import pygame
 import sys
+# from audio import Audio 
 
 # Inisialisasi pygame
 pygame.init()
@@ -56,6 +57,9 @@ def draw_menu():
     screen.blit(quit_text, quit_rect)
 
     pygame.display.update()
+
+    #inisialisasi musik
+    
 
 def menu_loop():
     while True:
