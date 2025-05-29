@@ -1,6 +1,6 @@
 import pygame
 import sys
-from audio import Music
+# from audio import Audio 
 
 # Inisialisasi pygame
 pygame.init()
