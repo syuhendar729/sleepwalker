@@ -15,7 +15,8 @@ from scene.winning_condition import show_win_screen
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        # self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
         pygame.display.set_caption("Sleep Walker Maze - Darkness")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 36)
@@ -108,6 +109,7 @@ class Game:
 
         # Cek sentuhan antara player dan finish
         if self.player.rect.colliderect(self.bed.rect):
+            print("Berhasil ke Finish")
             self.running = False
             self.music.stop_music()
             show_win_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -150,7 +152,7 @@ class Game:
 
         # Efek gelap dengan lubang cahaya
         dark_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        dark_surface.fill((0, 0, 0, 255))  # full hitam 255
+        dark_surface.fill((0, 0, 0, DARKNESS))  # full hitam 255
 
         # Jika waktu habis maka senter akan mati dan kalah
         if self.time_left > 0:
