@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import pygame
 from settings import *
-
+from audio import Audio
 class Player(ABC):
     def __init__(self, x, y, size, color, max_speed):
         self.size = size
@@ -10,20 +10,31 @@ class Player(ABC):
         self.vx = 0
         self.vy = 0
         self.max_speed = max_speed
+        self.sfx = Audio()
 
     def handle_input(self, keys):
-        if keys[pygame.K_w]: self.vy -= PLAYER_ACCEL
-        if keys[pygame.K_s]: self.vy += PLAYER_ACCEL
-        if keys[pygame.K_a]: self.vx -= PLAYER_ACCEL
-        if keys[pygame.K_d]: self.vx += PLAYER_ACCEL
+        if keys[pygame.K_w]: 
+            self.vy -= PLAYER_ACCEL
+            # self.sfx.play("sfx-player-move.mp3")
+        if keys[pygame.K_s]: 
+            self.vy += PLAYER_ACCEL
+            # self.sfx.play("sfx-player-move.mp3")
+        if keys[pygame.K_a]: 
+            self.vx -= PLAYER_ACCEL
+            # self.sfx.play("sfx-player-move.mp3")
+        if keys[pygame.K_d]: 
+            self.vx += PLAYER_ACCEL
+            # self.sfx.play("sfx-player-move.mp3")
 
         self.vx = max(-self.max_speed, min(self.max_speed, self.vx))
         self.vy = max(-self.max_speed, min(self.max_speed, self.vy))
 
         if not (keys[pygame.K_a] or keys[pygame.K_d]):
             self.vx *= (1 - PLAYER_FRICTION)
+            # self.sfx.play("sfx-player-move.mp3", loop=False)
         if not (keys[pygame.K_w] or keys[pygame.K_s]):
             self.vy *= (1 - PLAYER_FRICTION)
+            # self.sfx.play("sfx-player-move.mp3", loop=False)
 
     @abstractmethod
     def update(self):

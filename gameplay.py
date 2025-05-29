@@ -1,16 +1,16 @@
 import pygame
 import sys
 import random
-from camera import Camera
 from player.monster import Monster
 from settings import *
-from music import Music
+from audio import Audio
 from player.player_human import PlayerHuman
 from property.property import Battery, Bed, Flash
 from obstacle.stone import Stone
 from obstacle.wall import walls
 from scene.lose_condition import show_lose_screen
 from scene.winning_condition import show_win_screen
+from camera import Camera
 
 class Game:
     def __init__(self):
@@ -35,7 +35,7 @@ class Game:
         self.bed = Bed(self.bed_pos[0], self.bed_pos[1])
 
         # Music
-        self.music = Music()
+        self.audio = Audio()
 
     # Membuat posisi acak / memilih tempat acak
     def get_random_position(self):
@@ -45,7 +45,7 @@ class Game:
         return (x, y)
 
     def run(self):
-        self.music.play('bs-gameplay.mp3')
+        self.audio.play('bs-gameplay.mp3')
         while self.running:
             self.clock.tick(60)
             self.handle_events()
@@ -100,7 +100,7 @@ class Game:
         if self.player.rect.colliderect(self.monster.rect):
             self.player.is_alive = False            
             self.running = False
-            self.music.stop_music()
+            self.audio.stop_music()
             show_lose_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         # Memerbarui monster
@@ -109,7 +109,7 @@ class Game:
         # Cek sentuhan antara player dan finish
         if self.player.rect.colliderect(self.bed.rect):
             self.running = False
-            self.music.stop_music()
+            self.audio.stop_music()
             show_win_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
 
@@ -150,7 +150,7 @@ class Game:
 
         # Efek gelap dengan lubang cahaya
         dark_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        dark_surface.fill((0, 0, 0, 255))  # full hitam 255
+        dark_surface.fill((0, 0, 0, 200))  # full hitam 255
 
         # Jika waktu habis maka senter akan mati dan kalah
         if self.time_left > 0:
@@ -159,7 +159,7 @@ class Game:
             # light_radius = 50
             # pygame.draw.circle(dark_surface, (0, 0, 0, 0), self.player.rect.center, light_radius)
         else:             
-            self.music.stop_music()
+            self.audio.stop_music()
             show_lose_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.screen.blit(dark_surface, (0, 0))
