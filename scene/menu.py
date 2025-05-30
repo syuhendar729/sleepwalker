@@ -62,20 +62,22 @@ def draw_menu():
     
 
 def menu_loop():
-    while True:
-        draw_menu()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if start_rect.collidepoint(event.pos):
-                    # print("Game dimulai!")  # Nanti ganti dengan fungsi start_game() --> main utama dijadikan fungsi gameplay
-                    return "start"
-                elif quit_rect.collidepoint(event.pos):
+    try:
+        while True:
+            draw_menu()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if start_rect.collidepoint(event.pos):
+                        return "start"
+                    elif quit_rect.collidepoint(event.pos):
+                        pygame.quit()
+                        sys.exit()
+    except Exception as e:
+        print(f"Error in menu loop: {e}")
 
 
 
