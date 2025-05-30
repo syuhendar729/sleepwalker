@@ -12,6 +12,14 @@ class Player(ABC):
         self.max_speed = max_speed
         self.sfx = Audio()
 
+    @abstractmethod
+    def update(self):
+        pass
+
+    @abstractmethod
+    def draw(self, screen):
+        pass
+
     def handle_input(self, keys):
         if keys[pygame.K_w]: 
             self.vy -= PLAYER_ACCEL
@@ -36,13 +44,6 @@ class Player(ABC):
             self.vy *= (1 - PLAYER_FRICTION)
             # self.sfx.play("sfx-player-move.mp3", loop=False)
 
-    @abstractmethod
-    def update(self):
-        pass
-
-    @abstractmethod
-    def draw(self, screen):
-        pass
 
 
 

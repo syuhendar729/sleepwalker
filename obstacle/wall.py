@@ -8,8 +8,11 @@ class Wall:
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height)
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, BROWN, self.rect)
+    def draw(self, screen, camera=None):
+        rect_to_draw = self.rect
+        if camera:
+            rect_to_draw = camera.apply(self.rect)
+        pygame.draw.rect(screen, BROWN, rect_to_draw)
 
 class HorizontalWall(Wall):
     def __init__(self, x, y):
