@@ -39,7 +39,6 @@ class Flash(Property):
         print(screen)
 
     def drawlight(self, dark_surface, player, camera=None):
-        # pygame.draw.circle(dark_surface, (0, 0, 0, 0), player.rect.center, self.radius)
         center = player.rect.center
         if camera:
             center = (center[0] + camera.offset_x, center[1] + camera.offset_y)

@@ -1,5 +1,3 @@
-#testing music code for skywalker
-
 import pygame
 import os
 
@@ -8,8 +6,8 @@ class Audio:
         pygame.mixer.init()
         self.current_music = None
         self.audio_folder = os.path.join(os.path.dirname(__file__), 'audio')
-        
-    
+
+
     def play(self, filename, loop = True, volume = 0.5):
         path = os.path.join(self.audio_folder, filename)
         if self.current_music != path:
@@ -28,4 +26,5 @@ class Audio:
     def resume_music(self):
         pygame.mixer.music.unpause()
 
-        
+
+
