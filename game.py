@@ -16,144 +16,124 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Sleep Walker Maze - Darkness")
-        # self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.SysFont(None, 36)
+        self.font = pygame.font.SysFont("Arial", 36)
         self.camera = Camera()
 
-        self.player = PlayerHuman(40, 40)
-        self.flash = Flash()
-        self.monster = Monster(500, 740)
-        self.stones = [Stone(720, 80), Stone(800, 700)]
-        self.batteries = [Battery(300, 280), Battery(800, 420)]
+        self._player = PlayerHuman(40, 40)
+        self._flash = Flash()
+        self._monster = Monster(500, 740)
+        self._stones = [Stone(720, 80), Stone(800, 700)]
+        self._batteries = [Battery(300, 280), Battery(800, 420)]
 
-        self.start_ticks = pygame.time.get_ticks()
+        self._start_ticks = pygame.time.get_ticks()
+        self._running = True
+        self._finish_pos = self._get_random_position()
+        self._finish = CircleVictory(self._finish_pos[0], self._finish_pos[1])
 
-        self.running = True
-        self.finish_pos = self.get_random_position()
-        self.finish = CircleVictory(self.finish_pos[0], self.finish_pos[1])
+        self._audio = Audio()
+        self._time_left = 30
 
-        # Music
-        self.audio = Audio()
-
-    # Membuat posisi acak / memilih tempat acak
-    def get_random_position(self):
-        margin = 50 
+    def _get_random_position(self):
+        margin = 50
         x = random.randint(margin, WORLD_WIDTH - margin)
         y = random.randint(margin, WORLD_HEIGHT - margin)
         return (x, y)
 
     def run(self):
-        self.audio.play('bs-gameplay.mp3')
-        while self.running:
+        self._audio.play('bs-gameplay.mp3')
+        while self._running:
             self.clock.tick(60)
-            self.handle_events()
-            self.update()
-            self.draw()
-
+            self._handle_events()
+            self._update()
+            self._draw()
         pygame.quit()
         sys.exit()
 
-    def handle_events(self):
+    def _handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.running = False
+                self._running = False
 
-    def update(self):
+    def _update(self):
         keys = pygame.key.get_pressed()
+        self._player.handle_input(keys)
+        self._player.update()
+        self._player.move_and_collide(walls)
+        self.camera.update(self._player)
 
+        self._update_time()
 
-        self.player.handle_input(keys)
-        self.player.update()
-        self.player.move_and_collide(walls)
-        self.camera.update(self.player)
+        self._handle_stone_collisions()
+        self._update_stones()
+        self._handle_battery_pickup()
+        self._handle_monster_collision()
+        self._monster.update()
+        self._handle_finish_reached()
 
-        # Hitung waktu mundur
-        seconds_passed = (pygame.time.get_ticks() - self.start_ticks) // 1000
-        self.time_left = max(0, 30 - seconds_passed)
+    def _update_time(self):
+        seconds_passed = (pygame.time.get_ticks() - self._start_ticks) // 1000
+        self._time_left = max(0, 30 - seconds_passed)
 
-        # Cek sentuhan antara player dan stones
-        for stone in self.stones:
-            if self.player.rect.colliderect(stone.rect):
-                dx = stone.rect.centerx - self.player.rect.centerx
-                dy = stone.rect.centery - self.player.rect.centery
+    def _handle_stone_collisions(self):
+        for stone in self._stones:
+            if self._player.rect.colliderect(stone.rect):
+                dx = stone.rect.centerx - self._player.rect.centerx
+                dy = stone.rect.centery - self._player.rect.centery
                 if abs(dx) > abs(dy):
                     stone.push(3 if dx > 0 else -3, 0)
-                    self.player.vx *= 0.5
+                    self._player.vx *= 0.5
                 else:
                     stone.push(0, 3 if dy > 0 else -3)
-                    self.player.vy *= 0.5
+                    self._player.vy *= 0.5
 
-        for stone in self.stones:
+    def _update_stones(self):
+        for stone in self._stones:
             stone.update(walls)
 
-        # Cek sentuhan antara player dan baterai
-        for battery in self.batteries:
-            if self.player.rect.colliderect(battery.rect) and not battery.is_taken:
+    def _handle_battery_pickup(self):
+        for battery in self._batteries:
+            if self._player.rect.colliderect(battery.rect) and not battery.is_taken:
                 print("Berhasil mengambil baterai")
                 battery.is_taken = True
-                self.start_ticks += 30 * 1000  # tambah waktu
-                self.batteries.remove(battery)
+                self._start_ticks += 30 * 1000  # tambah waktu
+                self._batteries.remove(battery)
 
-        # Cek sentuhan antara monster dan player
-        if self.player.rect.colliderect(self.monster.rect):
-            self.player.is_alive = False            
-            self.running = False
-            self.audio.stop_music()
+    def _handle_monster_collision(self):
+        if self._player.rect.colliderect(self._monster.rect):
+            self._player.is_alive = False
+            self._running = False
+            self._audio.stop_music()
             show_lose_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-        # Memerbarui monster
-        self.monster.update() 
-
-        # Cek sentuhan antara player dan finish
-        if self.player.rect.colliderect(self.finish.rect):
+    def _handle_finish_reached(self):
+        if self._player.rect.colliderect(self._finish.rect):
             print("Berhasil ke Finish")
-            self.running = False
-            self.audio.stop_music()
+            self._running = False
+            self._audio.stop_music()
             show_win_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-
-    def draw(self):
+    def _draw(self):
         self.screen.fill(GRAY)
 
-        objects = [self.player, self.monster] + self.stones + self.batteries + walls + [self.finish]
+        # Gabungkan semua objek ke list untuk digambar
+        objects = [self._player, self._monster] + self._stones + self._batteries + walls + [self._finish]
         for obj in objects:
             obj.draw(self.screen, self.camera)
 
-        # for wall in walls:
-        #     wall.draw(self.screen, self.camera)
-        #
-        # for stone in self.stones:
-        #     stone.draw(self.screen, self.camera)
-        #
-        # for battery in self.batteries:
-        #     battery.draw(self.screen, self.camera)
-        #
-        # # Gambar player di posisi sekarang
-        # self.player.draw(self.screen, self.camera)
-        #
-        # # Gambar posisi monster
-        # self.monster.draw(self.screen, self.camera)
-        #
-        # # Gambar lingkaran finish
-        # self.finish.draw(self.screen, self.camera)
-
-        # Efek gelap dengan lubang cahaya
         dark_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        dark_surface.fill((0, 0, 0, DARKNESS))  # full hitam 255
+        dark_surface.fill((0, 0, 0, DARKNESS))
 
-        # Jika waktu habis maka senter akan mati dan kalah
-        if self.time_left > 0:
-            self.flash.drawlight(dark_surface, self.player, self.camera)
-        else:             
-            self.audio.stop_music()
+        if self._time_left > 0:
+            self._flash.drawlight(dark_surface, self._player, self.camera)
+        else:
+            self._audio.stop_music()
             show_lose_screen(self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.screen.blit(dark_surface, (0, 0))
 
-        # Timer (jika mau tampilkan)
-        timer_text = self.font.render(f"Waktu: {self.time_left}", True, (255, 255, 255))
+        timer_text = self.font.render(f"Waktu: {self._time_left}", True, (255, 255, 255))
         self.screen.blit(timer_text, (10, 10))
 
         pygame.display.flip()

@@ -70,7 +70,7 @@ class PlayerHuman(Player):
 
         # Play SFX only when start moving
         if moving and not self.is_moving:
-            self.sfx.play("sfx-player-move.mp3", loop=False)
+            # self.sfx.play("sfx-player-move.mp3", loop=False)
             self.is_moving = True
         elif not moving:
             self.is_moving=False
